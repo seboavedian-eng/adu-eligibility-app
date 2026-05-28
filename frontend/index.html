@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brickline | Arlington ADU Feasibility Checker</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css" />
+    <link rel="stylesheet" href="styles.css?v=33" />
+    <script src="https://js.arcgis.com/4.29/"></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="wizard-panel">
+        <div class="brand-row">
+          <img class="brand-logo" src="assets/brickline_teal_bricks_transparent.png" alt="Brickline" />
+          <div>
+            <p class="eyebrow">Brickline</p>
+            <h1>Check ADU eligibility for your property.</h1>
+          </div>
+        </div>
+
+        <p class="intro">Search an address, answer the minimum questions, and see zoning options plus a preliminary detached ADU envelope when available.</p>
+
+        <div class="progress">
+          <div id="progressBar"></div>
+        </div>
+
+        <div id="eligibilityForm">
+          <section class="wizard-step active" data-step="0">
+            <h2>1. Address & Contact</h2>
+            <p class="muted">Search an Arlington address first. Parcel data will load automatically.</p>
+            <div class="field-label">Address <span class="required">*</span></div>
+            <div id="addressSearchHost"></div>
+            <div id="addressLoadStatus" class="inline-status">No address loaded yet.</div>
+            <label>Name <span class="required">*</span><input type="text" id="leadName" autocomplete="name" /></label>
+            <label>Email <span class="required">*</span><input type="email" id="leadEmail" autocomplete="email" /></label>
+            <p class="privacy-note">We will only use this email to send your findings, not for promotions.</p>
+          </section>
+
+          <section class="wizard-step" data-step="1">
+            <h2>2. Core Eligibility</h2>
+            <div class="field-group">
+              <p>Are you the property owner? <span class="required">*</span></p>
+              <label><input type="radio" name="isOwner" value="true" /> Yes</label>
+              <label><input type="radio" name="isOwner" value="false" /> No</label>
+            </div>
+            <div class="field-group">
+              <p>Is the existing home a one-family detached dwelling? <span class="required">*</span><span class="info" tabindex="0" data-tip="A one-family detached dwelling is a standalone house for one household, not a duplex, apartment, condo, or attached townhouse.">i</span></p>
+              <label><input type="radio" name="hasQualifyingMainDwelling" value="true" /> Yes</label>
+              <label><input type="radio" name="hasQualifyingMainDwelling" value="false" /> No / unsure</label>
+            </div>
+            <div class="field-group">
+              <p>Does the property already have an ADU? <span class="required">*</span><span class="info" tabindex="0" data-tip="An existing ADU means the property already has a permitted accessory dwelling unit, such as a basement apartment, garage apartment, or detached backyard unit.">i</span></p>
+              <label><input type="radio" name="hasExistingAdu" value="true" /> Yes</label>
+              <label><input type="radio" name="hasExistingAdu" value="false" /> No</label>
+            </div>
+            <div class="field-group">
+              <p>Does the property have a family/caregiver suite? <span class="required">*</span><span class="info" tabindex="0" data-tip="A family/caregiver suite is a limited living area for family or caregiving use and may not be a full independent rental unit with its own kitchen, bathroom, and separate living/sleeping space like an ADU.">i</span></p>
+              <label><input type="radio" name="hasFamilyCaregiverSuite" value="true" /> Yes</label>
+              <label><input type="radio" name="hasFamilyCaregiverSuite" value="false" /> No</label>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="2">
+            <h2>3. ADU Type</h2>
+            <div class="field-group">
+              <p>Where do you plan to create the ADU? <span class="required">*</span></p>
+              <label><input type="radio" name="aduType" value="WHOLLY_BASEMENT" /> Wholly within basement <small>The ADU would be entirely inside the basement of the main house.</small></label>
+              <label><input type="radio" name="aduType" value="ATTACHED_OR_WITHIN_MAIN_HOUSE_NOT_BASEMENT" /> Within/attached to main house <small>The ADU would be inside or physically connected to the main house, but not entirely within the basement.</small></label>
+              <label><input type="radio" name="aduType" value="EXISTING_DETACHED_STRUCTURE_CONVERSION" /> Convert existing detached structure <small>You would turn an existing separate structure, such as a garage or carriage house, into an ADU.</small></label>
+              <label><input type="radio" name="aduType" value="NEW_DETACHED_STRUCTURE" /> Build new detached ADU <small>You would build a new separate backyard structure for the ADU.</small></label>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="3">
+            <h2>4. Project Details</h2>
+            <div id="basementFields" class="branch-fields hidden">
+              <label>Basement size <span class="required">*</span><input type="number" id="basementSize" min="0" /></label>
+              <label>Proposed ADU GFA <span class="optional">(optional)</span><span class="info" tabindex="0" data-tip="Gross floor area is the total floor area inside the ADU or main dwelling, including rooms like living rooms, kitchens, bedrooms, bathrooms, halls, and finished usable spaces.">i</span><input type="number" id="aduGfaBasement" min="0" /></label>
+              <div class="field-group">
+                <p>Does/will the basement ADU have emergency egress? <span class="required">*</span><span class="info" tabindex="0" data-tip="Emergency egress means a safe emergency exit, usually a door or qualifying window; if you are unsure whether it meets code, choose No / unsure and the app will flag it for building-code review.">i</span></p>
+                <label><input type="radio" name="hasEgressConfirmed" value="true" /> Yes</label>
+                <label><input type="radio" name="hasEgressConfirmed" value="false" /> No / unsure</label>
+              </div>
+            </div>
+
+            <div id="attachedFields" class="branch-fields hidden">
+              <label>Main dwelling GFA <span class="required">*</span><span class="info" tabindex="0" data-tip="Gross floor area is the total floor area inside the ADU or main dwelling, including rooms like living rooms, kitchens, bedrooms, bathrooms, halls, and finished usable spaces.">i</span><input type="number" id="mainGfaAttached" min="0" /></label>
+              <label>Proposed ADU GFA <span class="optional">(optional)</span><input type="number" id="aduGfaAttached" min="0" /></label>
+              <div class="field-group">
+                <p>Is the ADU entrance above the first floor? <span class="required">*</span></p>
+                <label><input type="radio" name="entranceAboveFirstFloorAttached" value="true" /> Yes</label>
+                <label><input type="radio" name="entranceAboveFirstFloorAttached" value="false" /> No</label>
+              </div>
+              <div class="field-group stair-followup hidden" id="attachedStairFollowup">
+                <p>If the entrance is above the first floor, are the exterior stairs on the street-facing side? <span class="required">*</span></p>
+                <label><input type="radio" name="exteriorStairsFaceStreetAttached" value="true" /> Yes</label>
+                <label><input type="radio" name="exteriorStairsFaceStreetAttached" value="false" /> No</label>
+              </div>
+            </div>
+
+            <div id="existingDetachedFields" class="branch-fields hidden">
+              <div class="field-group">
+                <p>Was the detached structure built before May 18, 2019? <span class="required">*</span><span class="info" tabindex="0" data-tip="If unknown, the app will flag zoning review because older detached structures may qualify for a more flexible conversion path.">i</span></p>
+                <label><input type="radio" name="detachedBuiltBefore" value="true" /> Yes</label>
+                <label><input type="radio" name="detachedBuiltBefore" value="false" /> No</label>
+                <label><input type="radio" name="detachedBuiltBefore" value="unknown" /> Unknown</label>
+              </div>
+              <div class="field-group">
+                <p>Will the conversion stay within the existing exterior walls of the detached structure? <span class="required">*</span><span class="info" tabindex="0" data-tip="This means the conversion stays inside the current detached structure and does not expand its outside walls or footprint.">i</span></p>
+                <label><input type="radio" name="workWithinExistingWalls" value="true" /> Yes</label>
+                <label><input type="radio" name="workWithinExistingWalls" value="false" /> No / unsure</label>
+              </div>
+              <label>Main dwelling GFA <span class="required">*</span><span class="info" tabindex="0" data-tip="Gross floor area is the total floor area inside the ADU or main dwelling, including rooms like living rooms, kitchens, bedrooms, bathrooms, halls, and finished usable spaces.">i</span><input type="number" id="mainGfaExistingDetached" min="0" /></label>
+              <label>Proposed ADU GFA <span class="optional">(optional)</span><input type="number" id="aduGfaExistingDetached" min="0" /></label>
+            </div>
+
+            <div id="newDetachedFields" class="branch-fields hidden">
+              <label>Main dwelling GFA <span class="required">*</span><span class="info" tabindex="0" data-tip="Gross floor area is the total floor area inside the ADU or main dwelling, including rooms like living rooms, kitchens, bedrooms, bathrooms, halls, and finished usable spaces.">i</span><input type="number" id="mainGfaNewDetached" min="0" /></label>
+              <label>Proposed ADU GFA <span class="optional">(optional)</span><input type="number" id="aduGfaNewDetached" min="0" /></label>
+              <div class="field-group">
+                <p>Is the entrance above the first floor? <span class="required">*</span></p>
+                <label><input type="radio" name="entranceAboveFirstFloorDetached" value="true" /> Yes</label>
+                <label><input type="radio" name="entranceAboveFirstFloorDetached" value="false" /> No</label>
+              </div>
+              <div class="field-group stair-followup hidden" id="detachedStairFollowup">
+                <p>If the entrance is above the first floor, are the exterior stairs on the street-facing side? <span class="required">*</span></p>
+                <label><input type="radio" name="exteriorStairsFaceStreetDetached" value="true" /> Yes</label>
+                <label><input type="radio" name="exteriorStairsFaceStreetDetached" value="false" /> No</label>
+              </div>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="4">
+            <h2>5. Parking</h2>
+            <label>How many legal off-street parking spaces exist today? <span class="required">*</span><span class="info" tabindex="0" data-tip="Off-street parking means legal parking spaces on your property, such as a driveway, garage, or parking pad, not street parking.">i</span><input type="number" id="existingOffStreetSpaces" min="0" /></label>
+            <div class="field-group">
+              <p>Does the property front a cul-de-sac? <span class="required">*</span><span class="info" tabindex="0" data-tip="A cul-de-sac is a dead-end street with a rounded turnaround, and Arlington may apply different parking rules there.">i</span></p>
+              <label><input type="radio" name="frontsCulDeSac" value="true" /> Yes</label>
+              <label><input type="radio" name="frontsCulDeSac" value="false" /> No / unsure</label>
+            </div>
+            <div id="zeroParkingFollowup" class="field-group hidden">
+              <p>If zero spaces exist, can one off-street space be created if required?</p>
+              <label><input type="radio" name="canCreateOneParkingSpace" value="true" /> Yes</label>
+              <label><input type="radio" name="canCreateOneParkingSpace" value="false" /> No / unsure</label>
+            </div>
+            <div id="oneParkingFollowup" class="field-group hidden">
+              <p>Will your ADU plan keep that off-street space usable? <span class="required">*</span><span class="info" tabindex="0" data-tip="This means the ADU project will not remove, block, or make unusable the required existing parking spaces.">i</span></p>
+              <label><input type="radio" name="willMaintainExistingParkingSpaces" value="true" /> Yes</label>
+              <label><input type="radio" name="willMaintainExistingParkingSpaces" value="false" /> No</label>
+            </div>
+            <div id="twoParkingFollowup" class="field-group hidden">
+              <p>Will your ADU plan keep at least two off-street spaces usable? <span class="required">*</span><span class="info" tabindex="0" data-tip="This means the ADU project will not remove, block, or make unusable the required existing parking spaces.">i</span></p>
+              <label><input type="radio" name="willMaintainAtLeastTwoSpaces" value="true" /> Yes</label>
+              <label><input type="radio" name="willMaintainAtLeastTwoSpaces" value="false" /> No</label>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="5">
+            <h2>6. Occupancy & Result</h2>
+            <label>How many people do you estimate will occupy the ADU? <span class="required">*</span><input type="number" id="aduOccupants" min="0" /></label>
+            <div class="field-group">
+              <p>Will the owner live in either the main dwelling or ADU as primary residence? <span class="required">*</span></p>
+              <label><input type="radio" name="ownerWillLiveInMainOrAdu" value="true" /> Yes</label>
+              <label><input type="radio" name="ownerWillLiveInMainOrAdu" value="false" /> No</label>
+            </div>
+            <div id="oneFamilyFollowup" class="field-group hidden">
+              <p>If not, will the entire property be occupied by no more than one family? <span class="required">*</span></p>
+              <label><input type="radio" name="entirePropertyOccupiedByOneFamily" value="true" /> Yes</label>
+              <label><input type="radio" name="entirePropertyOccupiedByOneFamily" value="false" /> No</label>
+            </div>
+            <button type="button" id="checkEligibilityButton">Check Eligibility</button>
+            <div id="eligibilityProgress" class="eligibility-progress hidden">
+              <p id="eligibilityProgressText">Preparing review...</p>
+              <div class="striped-progress"><div id="eligibilityProgressBar"></div></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="wizard-actions">
+          <div id="validationBubble" class="validation-bubble hidden">Please answer the required fields.</div>
+          <button type="button" id="resetButton">Start From Scratch</button>
+          <button type="button" id="emailFindingsButton">Email me the findings</button>
+          <button type="button" id="backButton">Back</button>
+          <button type="button" id="nextButton">Next</button>
+        </div>
+        <div id="infoTooltip" class="info-tooltip hidden"></div>
+      </aside>
+
+      <section class="map-stage">
+        <div id="viewDiv"></div>
+        <div class="map-brand">
+          <span>Brickline</span>
+          <img src="assets/brickline_teal_bricks_transparent.png" alt="Brickline" />
+        </div>
+        <div id="resultCard" class="result-card hidden"></div>
+      </section>
+    </main>
+
+    <script src="app.js?v=33"></script>
+  </body>
+</html>

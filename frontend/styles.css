@@ -1,0 +1,581 @@
+:root {
+  --ink: #15211d;
+  --muted: #64736d;
+  --line: #dce7e1;
+  --paper: #ffffff;
+  --soft: #eef8f4;
+  --accent: #0f8b6f;
+  --accent-dark: #096653;
+  --warning: #946500;
+  --danger: #a52828;
+  --review: #305c9c;
+  --shadow: 0 18px 55px rgba(17, 39, 35, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f7faf8;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: minmax(390px, 34vw) 1fr;
+  min-height: 100vh;
+}
+
+.wizard-panel {
+  position: relative;
+  z-index: 4;
+  height: 100vh;
+  overflow: hidden;
+  padding: 26px;
+  background: var(--paper);
+  border-right: 1px solid var(--line);
+}
+
+.brand-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.brand-logo {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--accent-dark);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  max-width: 440px;
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+
+h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+
+.intro,
+.muted {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.intro {
+  margin: 16px 0;
+}
+
+.progress {
+  height: 8px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  background: #e8efeb;
+  border-radius: 8px;
+}
+
+#progressBar {
+  width: 16.6%;
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.2s ease;
+}
+
+#eligibilityForm {
+  position: relative;
+  height: calc(100vh - 250px);
+  min-height: 390px;
+  overflow: visible;
+}
+
+.wizard-step {
+  position: absolute;
+  inset: 0;
+  display: none;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.wizard-step.active {
+  display: block;
+}
+
+.wizard-step[data-step="0"] {
+  overflow: visible;
+}
+
+.fact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.fact-grid div,
+.option-card,
+.option-summary,
+.inline-status {
+  padding: 12px;
+  background: #f6f9f8;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.inline-status {
+  margin: 10px 0 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.option-summary:empty {
+  display: none;
+}
+
+.fact-grid span,
+label {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.fact-grid strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.field-group {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.field-group:first-of-type {
+  border-top: 0;
+}
+
+.field-group p,
+.field-group label,
+.wizard-step > label,
+.field-label {
+  font-size: 14px;
+}
+
+.field-group p {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.field-group label {
+  margin: 8px 0;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+label small {
+  display: block;
+  margin: 3px 0 0 26px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+}
+
+.required {
+  color: var(--danger);
+  font-weight: 900;
+}
+
+.optional {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.info {
+  position: relative;
+  display: inline-grid;
+  width: 17px;
+  height: 17px;
+  margin-left: 6px;
+  place-items: center;
+  color: var(--review);
+  background: white;
+  border: 1px solid var(--review);
+  border-radius: 50%;
+  cursor: help;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  vertical-align: 1px;
+}
+
+.info-tooltip {
+  position: absolute;
+  z-index: 80;
+  width: min(300px, calc(100% - 52px));
+  padding: 10px 12px;
+  color: var(--ink);
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.privacy-note {
+  margin: -4px 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+input[type="radio"] {
+  margin-right: 8px;
+  accent-color: var(--accent);
+}
+
+input[type="number"],
+input[type="email"],
+input[type="text"] {
+  width: 100%;
+  min-height: 42px;
+  margin: 6px 0 12px;
+  padding: 9px 10px;
+  color: var(--ink);
+  border: 1px solid #cfdad5;
+  border-radius: 8px;
+  font: inherit;
+}
+
+input:focus {
+  border-color: var(--accent);
+  outline: 3px solid rgba(15, 139, 111, 0.16);
+}
+
+button {
+  min-height: 46px;
+  padding: 0 16px;
+  color: white;
+  background: var(--accent);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+button:hover {
+  background: var(--accent-dark);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+#checkEligibilityButton {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.eligibility-progress {
+  margin-top: 12px;
+}
+
+.eligibility-progress p {
+  min-height: 20px;
+  margin: 0 0 8px;
+  color: var(--accent-dark);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.striped-progress {
+  height: 12px;
+  overflow: hidden;
+  background: #dcebe5;
+  border-radius: 8px;
+}
+
+#eligibilityProgressBar {
+  width: 0;
+  height: 100%;
+  background-color: var(--accent);
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.22) 0,
+    rgba(255, 255, 255, 0.22) 8px,
+    rgba(0, 0, 0, 0.08) 8px,
+    rgba(0, 0, 0, 0.08) 16px
+  );
+  transition: width 0.18s ease;
+}
+
+#addressSearchHost {
+  position: relative;
+  z-index: 20;
+}
+
+#addressSearchHost .esri-search__suggestions-menu {
+  z-index: 30;
+}
+
+.wizard-actions {
+  position: absolute;
+  right: 26px;
+  bottom: 22px;
+  left: 26px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.validation-bubble {
+  position: absolute;
+  right: 0;
+  bottom: 110px;
+  max-width: 280px;
+  padding: 10px 12px;
+  color: var(--danger);
+  background: #fff4f4;
+  border: 1px solid #f0c7c7;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.validation-bubble::after {
+  position: absolute;
+  right: 24px;
+  bottom: -7px;
+  width: 12px;
+  height: 12px;
+  content: "";
+  background: #fff4f4;
+  border-right: 1px solid #f0c7c7;
+  border-bottom: 1px solid #f0c7c7;
+  transform: rotate(45deg);
+}
+
+#backButton {
+  color: var(--ink);
+  background: #edf2ef;
+}
+
+#resetButton,
+#emailFindingsButton {
+  color: var(--ink);
+  background: #edf2ef;
+  font-size: 13px;
+}
+
+#resetButton.hidden,
+#emailFindingsButton.hidden {
+  display: none;
+}
+
+.hidden {
+  display: none;
+}
+
+.map-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.map-brand {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 46px;
+  padding: 7px 10px;
+  color: var(--accent-dark);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(17, 39, 35, 0.12);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.map-brand img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+#viewDiv {
+  width: 100%;
+  height: 100%;
+}
+
+.result-card {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: 3;
+  width: min(520px, calc(100% - 48px));
+  max-height: 75vh;
+  overflow-y: auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+#addressSearchHost .esri-search {
+  width: 100%;
+}
+
+#addressSearchHost .esri-search__container {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  border: 1px solid #cfdad5;
+  border-radius: 8px;
+}
+
+#addressSearchHost .esri-search__input-container,
+#addressSearchHost .esri-search__form {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+}
+
+#addressSearchHost .esri-search__input {
+  min-height: 40px;
+}
+
+#addressSearchHost .esri-search__submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  height: 40px;
+  min-height: 40px;
+  margin: 0;
+  transform: translateY(1px);
+}
+
+.result-card h2 {
+  margin: 8px 0;
+}
+
+.result-reason {
+  margin: 0 0 10px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.result-card ul {
+  margin: 8px 0 16px;
+  padding-left: 18px;
+}
+
+.result-card li {
+  margin: 7px 0;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 9px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.pill.likely_eligible {
+  color: #07533e;
+  background: #dff5eb;
+}
+
+.pill.eligible_if_redesigned {
+  color: var(--warning);
+  background: #fff3cf;
+}
+
+.pill.needs_survey_zoning_review {
+  color: var(--review);
+  background: #dfeaff;
+}
+
+.pill.not_eligible {
+  color: var(--danger);
+  background: #fbe1e1;
+}
+
+.esri-search {
+  width: min(520px, calc(100vw - 460px));
+}
+
+@media (max-width: 920px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .wizard-panel {
+    height: 100vh;
+    border-right: 0;
+  }
+
+  .map-stage {
+    height: 70vh;
+    min-height: 520px;
+  }
+
+  .esri-search {
+    width: calc(100vw - 36px);
+  }
+}
+
+@media (max-width: 560px) {
+  .wizard-panel {
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 27px;
+  }
+
+  .fact-grid {
+    grid-template-columns: 1fr;
+  }
+}
